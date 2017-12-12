@@ -51,7 +51,7 @@ def get_max_profit(stock_prices):
     """
     For every price, we check if:
 
-    - we can get a better profit by buying at min_price and selling 
+    - we can get a better profit by buying at min_price and selling
     at the current_price
     - we have a new min_price
     """
