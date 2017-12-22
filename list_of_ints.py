@@ -61,8 +61,8 @@ def highest_product(list_of_ints):
                                    lowest_product_of_2*num)
         # do we have a new highest product of two?
         highest_product_of_2 = max(highest_product_of_2, 
-                                   num*highest,
-                                   num*lowest)
+                                   num * highest,
+                                   num * lowest)
         lowest_product_of_2 = min(lowest_product_of_2,
                                   num * highest,
                                   num * lowest)
