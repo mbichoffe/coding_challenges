@@ -99,6 +99,12 @@ class BinaryTree(object):
     def setRootVal(self, obj):
         self.key = obj
 
+    def preorder(self):
+        print(self.key)
+        if self.leftChild():
+            self.leftChild.preorder()
+        if self.rightChild():
+            self.rightChild.preorder()
 
 # r = BinaryTree('a')
 # r.insertLeft('b')
@@ -127,7 +133,6 @@ STEP 1 = split expression string into a list of tokens
 def create_parse_tree(math_expression):
 
     tokens = math_expression.split()
-    print(tokens)
     #start with an empty Binary tree
     parse_tree = BinaryTree('')
 
@@ -193,11 +198,15 @@ def evaluate(parse_tree):
     right_c = parse_tree.getRightChild()
 
     if left_c and right_c:
-        print(parse_tree.getRootVal())
-        print(right_c.getRootVal())
-        print(left_c.getRootVal())
         f = operators[parse_tree.getRootVal()]
         return f(evaluate(left_c), evaluate(right_c))
     else:
         return parse_tree.getRootVal()
 
+def printexp(tree):
+  sVal = ""
+  if tree:
+      sVal = '(' + printexp(tree.getLeftChild())
+      sVal = sVal + str(tree.getRootVal())
+      sVal = sVal + printexp(tree.getRightChild())+')'
+  return sVal
