@@ -54,7 +54,7 @@ def is_super_balanced(TreeNode):
                 depths.append(depth)
 
             if len(depths) > 2 or \
-                    len(depths) == 2 and abs(depths[0] - depth[1]) > 1:
+                len(depths) == 2 and abs(depths[0]-depth[1]) > 1:
 
                 return False
 

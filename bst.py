@@ -8,6 +8,48 @@ a given value in the tree in O(\lg{n})O(lgn) time.
 
 """
 
+class TreeNode:
+    def __init__(self, key, val, left=None, right=None, parent = None):
+        self.key = key
+        self.payload = val
+        self.leftChild = left
+        self.rightChild = right
+        self.parent = parent
+
+    def hasLeftChild(self):
+        return self.leftChild
+
+    def hasRightChild(self):
+        return self.rightChild
+
+    def isLeftChild(self):
+        return self.parent and self.parent.leftChild == self
+
+    def isRightChild(self):
+        return self.parent and self.parent.rightChild == self
+
+    def isRoot(self):
+        return not self.parent
+
+    def isLeaf(self):
+        return not (self.rightChild and self.leftChild)
+
+    def hasAnyChildren(self):
+        return self.rightChild or self.leftChild
+
+    def hasBothChildren(self):
+        return self.rightChild and self.leftChild
+
+    def replaceNodeData(self, key, value, lc, rc):
+        self.key = key
+        self.payload = value
+        self.leftChild = lc
+        self.rightChild = rc
+        if self.hasLeftChild():
+            self.leftChild.parent = self
+        if self.hasRightChild():
+            self.rightChild.parent = self
+
 class BinarySearchTree:
     def __init__(self):
         self.root = None
@@ -29,32 +71,28 @@ class BinarySearchTree:
             self.root = TreeNode(key, val)
             self.size += 1
 
-    def _put(self, key, val, currentNode): 
-
+    def _put(self, key, val, currentNode):
         if key < currentNode.key:
             if currentNode.hasLeftChild():
-                self._put(key, val, currentNode.leftChild)
+                self._put(key,val,currentNode.leftChild)
             else:
-                currentNode.leftChild = TreeNode(key, val, parent=currentNode)
-
-        elif key > currentNode.key:
-            if currentNode.hasRightChild():
-                self._put(key, val, currentNode.rightChild)
-            else:
-                currentNode.rightChild = TreeNode(self, key, val, parent=currentNode)
+                currentNode.leftChild = TreeNode(key,val,parent=currentNode)
         else:
-            currentNode.replaceNodeData(self, self.key)
+            if currentNode.hasRightChild():
+                self._put(key,val,currentNode.rightChild)
+            else:
+                currentNode.rightChild = TreeNode(key,val,parent=currentNode)
 
-    def __setitem__(self, key, val):  # overloads [] operator for assignment
-        self.put(key, val)
+    def __setitem__(self, k, v):  # overloads [] operator for assignment
+        self.put(k, v)
 
 
     def get(self, key):
         if self.root:
             result = self._get(key, self.root)
 
-            if res:
-                return res.payload
+            if result:
+                return result.payload
             else:
                 return None
         else:
@@ -66,7 +104,7 @@ class BinarySearchTree:
             return None
         elif currentNode.key == key:
             return currentNode
-        elif key < currentNode.key:
+        elif currentNode.key > key:
             self._get(key, currentNode.leftChild)
         else:
             self._get(key, currentNode.rightChild)
@@ -126,61 +164,83 @@ class BinarySearchTree:
                                                 currentNode.leftChild.payload,
                                                 currentNode.leftChild.leftChild,
                                                 currentNode.rightChild.rightChild)
-           else:
-              if currentNode.isLeftChild():
-                  currentNode.rightChild.parent = currentNode.parent
-                  currentNode.parent.leftChild = currentNode.rightChild
-              elif currentNode.isRightChild():
-                  currentNode.rightChild.parent = currentNode.parent
-                  currentNode.parent.rightChild = currentNode.rightChild
-              else:
-                  currentNode.replaceNodeData(currentNode.rightChild.key,
-                                     currentNode.rightChild.payload,
-                                     currentNode.rightChild.leftChild,
-                                     currentNode.rightChild.rightChild)
+            else:
+                if currentNode.isLeftChild():
+                    currentNode.rightChild.parent = currentNode.parent
+                    currentNode.parent.leftChild = currentNode.rightChild
+                elif currentNode.isRightChild():
+                    currentNode.rightChild.parent = currentNode.parent
+                    currentNode.parent.rightChild = currentNode.rightChild
+                else:
+                    currentNode.replaceNodeData(currentNode.rightChild.key,
+                                                currentNode.rightChild.payload,
+                                                currentNode.rightChild.leftChild,
+                                                currentNode.rightChild.rightChild)
 
     def findSuccessor(self):
         successor = None
-        if self
-
-class TreeNode:
-    def __init__(self, key, val, left=None, right=None, parent = None):
-        self.key = key
-        self.payload = val
-        self.leftChild = left
-        self.rightChild = right
-        self.parent = parent
-
-    def hasLeftChild(self):
-        return self.leftChild
-
-    def hasRightChild(self):
-        return self.rightChild
-
-    def isLeftChild(self):
-        return self.parent and self.parent.leftChild == self
-
-    def isRightChild(self):
-        return self.parent and self.parent.rightChild == self
-
-    def isRoot(self):
-        return not self.parent
-
-    def isLeaf(self):
-        return not (self.rightChild and self.leftChild)
-
-    def hasAnyChildren(self):
-        return any(self.rightChild, self.leftChild)
-
-    def hasBothChildren(self):
-        return self.rightChild and self.leftChild
-
-    def replaceNodeData(self, key, value, lc, rc):
-        self.key = key
-        self.payload = value
-        self.leftChild = lc
-        self.rightChild = rc
-        if self.hasLeftChild():
-            self.leftChild.parent = self
         if self.hasRightChild():
-            self.rightChild.parent = self
+            successor = self.rightChild.findMin()
+        else:
+            if self.parent:
+                if self.isLeftChild():
+                    successor = self.parent
+            else:
+                self.parent.rightChild = None
+                successor = self.parent.findSuccessor()
+                self.parent.rightChild = self
+
+    def finMin(self):
+        current = self
+        while current.hasLeftChild():
+            current = current.leftChild
+        return current
+
+    def spliceOut(self):
+        if self.isLeaf():
+            if self.isLeftChild():
+                self.parent.leftChild = None
+            else:
+                self.parent.rightChild = None
+        elif self.hasAnyChildren():
+            if self.hasLeftChild():
+                if self.isLeftChild():
+                    self.parent.leftChild = self.leftChild
+
+                else:
+                    self.parent.rightChild = self.leftChild
+                    self.leftChild.parent = self.parent
+        else:
+            if self.isLeftChild():
+                self.parent.leftChild = self.leftChild
+            else:
+                self.parent.rightChild = self.rightChild
+                self.rightChild.parent = self.parent
+
+#Python provides us with a very powerful function to use when creating an
+#iterator. The function is called yield. yield is similar to return in that 
+#it returns a value to the caller. However, yield also takes the additional 
+#step of freezing the state of the function so that the next time the function
+#is called it continues executing from the exact point it left off earlier. 
+#Functions that create objects that can be iterated are called
+#generator functions.
+
+    def __iter__(self):
+        if self:
+            if self.hasLeftChild():
+                for elem in self.leftChild:
+                    yield elem
+            yield self.key
+            if self.hasRightChild():
+                for elem in self.rightChild:
+                    yield elem
+
+
+mytree = BinarySearchTree()
+mytree[3]="red"
+mytree[4]="blue"
+mytree[6]="yellow"
+mytree[2]="at"
+
+print(mytree[6])
+print(mytree[2])
