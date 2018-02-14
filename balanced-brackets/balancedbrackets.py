@@ -63,10 +63,9 @@ def has_balanced_brackets(phrase):
             if char in openers:
                 seen.append(char)
             elif char in c_o_b.keys():
-                if not(len(seen)) or c_o_b[char] != seen[-1]:
+                if not(len(seen)) or c_o_b[char] != seen.pop():
                     return False
-                else:
-                    seen.pop()
+
 
     return not len(seen)
 
