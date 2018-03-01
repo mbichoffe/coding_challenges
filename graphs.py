@@ -177,5 +177,88 @@ g.addEdge(5,4,8)
 g.addEdge(5,2,1)
 
 for vert in g:
-    for w in v.getConnections():
-        print({}, {}).format(v.getId(), w.getId())
+    for w in vert.getConnections():
+        print(("{}, {}").format(vert.getId(), w.getId()))
+
+"""
+THE WORD LADDER PROBLEM
+To begin our study of graph algorithms let’s consider the following
+puzzle called a word ladder. Transform the word “FOOL” into the word “SAGE”.
+In a word ladder puzzle you must make the change occur gradually by changing
+one letter at a time. At each step you must transform one word into anothe
+word, you are not allowed to transform a word into a non-word. 
+The word ladder puzzle was invented in 1878 by Lewis Carroll,
+the author of Alice in Wonderland. The following sequence of words shows
+one possible solution to the problem posed above.
+
+FOOL
+POOL
+POLL
+POLE
+PALE
+SALE
+SAGE
+There are many variations of the word ladder puzzle. For example you
+might be given a particular number of steps in which to accomplish the
+transformation, or you might need to use a particular word. In this section
+we are interested in figuring out the smallest number of transformations needed
+to turn the starting word into the ending word.
+
+Not surprisingly, since this chapter is on graphs, we can solve this problem
+using a graph algorithm. Here is an outline of where we are going:
+
+Represent the relationships between the words as a graph.
+Use the graph algorithm known as breadth first search to find an
+efficient path from the starting word to the ending word.
+
+We could use several different approaches to create the graph we need to solve
+this problem. Let’s start with the assumption that we have a list of words that
+are all the same length. As a starting point, we can create a vertex in the
+graph for every word in the list. To figure out how to connect the words,
+we could compare each word in the list with every other. When we compare we are
+looking to see how many letters are different. If the two words in question are
+different by only one letter, we can create an edge between them in the graph.
+For a small set of words that approach would work fine; however let’s suppose
+we have a list of 5,110 words. Roughly speaking, comparing one word to every
+other word on the list is an O(n2) algorithm. 
+For 5,110 words, n2 is more than 26 million comparisons.
+
+We can do much better by using the following approach.
+Suppose that we have a huge number of buckets, each of them with a four-letter
+word on the outside, except that one of the letters in the label has been
+replaced by an underscore. For example, consider  we might have a bucket labeled “pop_.”
+As we process each word in our list we compare the word with each bucket, 
+using the ‘_’ as a wildcard, so both “pope” and “pops” would match “pop_.” 
+Every time we find a matching bucket, we put our word in that bucket.
+Once we have all the words in the appropriate buckets we know that all
+the words in the bucket must be connected.
+
+_OPE: POPE ROPE NOPE HOPE LOPE MOPE COPE
+P_PE: POPE PIPE PAPE
+PO_E: POPE POLE PORE POSE POKE
+
+"""
+def buildGraph(wordfile):
+    d = {}
+    g = Graph()
+
+    w = open(wordfile, 'r')
+    for line in wfile:
+        word = line[:-1]
+        for i in range(len(word)):
+            bucket = word[:i]+'_'+word[i+1:]
+            if bucket in d:
+                d[bucket].append(word)
+            else:
+                d[bucket] = [word]
+
+    for bucket in d.keys():
+        for word1 in d[bucket]:
+            for word2 in d[bucket]:
+                if word1 != word2:
+                    g.addEdge(word1, word2)
+
+
+
+
+
